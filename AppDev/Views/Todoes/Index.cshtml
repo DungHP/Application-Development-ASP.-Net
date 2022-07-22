@@ -1,0 +1,45 @@
+﻿
+@model IEnumerable<Todo>
+<h1>Index of Todo</h1>
+
+
+<div class="form-group">
+<a asp-controller="Todoes"
+   asp-action="Create" class="btn btn-primary">Create new Todo</a>
+</div>
+<div class="input-group">
+  <div class="form-outline">
+    <input type="text" class="form-control" placeholder="Search" />
+  </div>
+  <button type="button" class="btn btn-primary">GO</button>
+</div>
+
+
+<table class="table">
+    <thead>
+      <th scope="col">ID</th>
+      <th scope="col">Description</th>
+      <th scope="col">Created At</th>
+      <th scope="col">Status</th>
+      <th scope="col">Action</th>
+    </thead>
+     <tbody>
+    @foreach (var item in Model){
+      <tr>
+      <th scope="row">@item.Id</th>
+      <td>@item.Description</td>
+      <td>@item.CreatedAt.ToShortDateString()</td>
+      <td>@item.Status.ToString()</td>
+      <td>
+            <a asp-controller="Todoes"
+   asp-action="Detail" asp-route-id="@item.Id" class="btn btn-primary">Detail</a>
+       <a asp-controller="Todoes"
+   asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+            <a asp-controller="Todoes"
+   asp-action="Edit" asp-route-id="@item.Id" class="btn btn-success">Edit</a>
+      </td>
+    </tr>
+    }
+    </tbody>
+</table>
+

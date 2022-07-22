@@ -3,8 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using WebApplication2.Models;
 
-namespace AppDev.Data
+namespace WebApplication2.Data
 {
   public class ApplicationDbContext : IdentityDbContext
   {
@@ -12,5 +13,6 @@ namespace AppDev.Data
         : base(options)
     {
     }
+    public DbSet<Todo> Todoes { get; set; }
   }
 }
