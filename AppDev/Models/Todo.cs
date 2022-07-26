@@ -23,6 +23,7 @@ namespace WebApplication2.Models
     [ForeignKey("Category")]
     public int CategoryId { get; set; } 
     public Category Category { get; set; }
+    public string UserId { get; set; }
     public IdentityUser User { get; set; }  
   }
   public class Category

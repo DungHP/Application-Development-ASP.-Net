@@ -1,5 +1,6 @@
 ﻿using AppDev.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections;
@@ -15,18 +16,24 @@ namespace WebApplication2.Controllers
   public class TodoesController : Controller
   {
     private ApplicationDbContext _context;
-    public TodoesController(ApplicationDbContext context)
+    private readonly UserManager<IdentityUser> _userManager;
+    public TodoesController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
     {
       _context = context;
+      _userManager = userManager;
     }
+    [HttpGet]
     [HttpGet]
     public IActionResult Index(string category)
     {
+      var currentUserId = _userManager.GetUserId(User);
       if (!string.IsNullOrWhiteSpace(category))
       {
         var result = _context.Todoes
           .Include(t => t.Category)
-          .Where(t => t.Category.Description.Equals(category))
+          .Where(t => t.Category.Description.Equals(category)
+             && t.UserId == currentUserId
+          )
           .ToList();
 
         return View(result);
@@ -34,6 +41,7 @@ namespace WebApplication2.Controllers
 
       IEnumerable<Todo> todoes = _context.Todoes
         .Include(t => t.Category)
+        .Where(t => t.UserId == currentUserId)
         .ToList();
       return View(todoes);
     }
