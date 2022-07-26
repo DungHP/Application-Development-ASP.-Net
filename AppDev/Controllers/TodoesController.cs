@@ -83,7 +83,9 @@ namespace WebApplication2.Controllers
     [HttpGet]
     public IActionResult Delete(int id)
     {
-      var todoInDb = _context.Todoes.SingleOrDefault(t => t.Id == id);
+      var currentUserId = _userManager.GetUserId(User);
+      var todoInDb = _context.Todoes.SingleOrDefault(t => t.Id == id 
+      && t.UserId == currentUserId);
       if (todoInDb is null)
       {
         return NotFound();
@@ -96,7 +98,9 @@ namespace WebApplication2.Controllers
     [HttpGet]
     public IActionResult Edit(int id)
     {
-      var todoInDb = _context.Todoes.SingleOrDefault(t => t.Id == id);
+      var currentUserId = _userManager.GetUserId(User);
+      var todoInDb = _context.Todoes.SingleOrDefault(t => t.Id == id 
+      && t.UserId == currentUserId);
       
       if (todoInDb is null)
       {
@@ -115,7 +119,9 @@ namespace WebApplication2.Controllers
     [HttpPost]
     public IActionResult Edit(TodoCategoriesViewModel viewModel)
     {
-      var todoInDb = _context.Todoes.SingleOrDefault(t => t.Id == viewModel.Todo.Id);
+      var currentUserId = _userManager.GetUserId(User);
+      var todoInDb = _context.Todoes.SingleOrDefault(t => t.Id == viewModel.Todo.Id
+      && t.UserId == currentUserId);
 
       if (todoInDb is null)
       {
@@ -140,9 +146,10 @@ namespace WebApplication2.Controllers
     [HttpGet]
     public IActionResult Detail(int id)
     {
+      var currentUserId = _userManager.GetUserId(User);
       var todoInDb = _context.Todoes
         .Include(t => t.Category)
-        .SingleOrDefault(t => t.Id == id);
+        .SingleOrDefault(t => t.Id == id && t.UserId == currentUserId);
       if (todoInDb is null)
       {
         return NotFound();
