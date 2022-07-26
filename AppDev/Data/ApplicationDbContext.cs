@@ -14,5 +14,6 @@ namespace WebApplication2.Data
     {
     }
     public DbSet<Todo> Todoes { get; set; }
+    public DbSet<Category> Categories { get; set; }
   }
 }
