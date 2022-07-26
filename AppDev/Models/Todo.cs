@@ -8,7 +8,7 @@ namespace WebApplication2.Models
   {
     [Key]
     public int Id { get; set; }
-    [Required]
+    [Required(ErrorMessage = "You haven't input anything in the description!")]
     [StringLength(255)]
     public string Description   { get; set; }
 

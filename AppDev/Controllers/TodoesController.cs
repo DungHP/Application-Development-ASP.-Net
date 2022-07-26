@@ -31,6 +31,13 @@ namespace WebApplication2.Controllers
     [HttpPost]
     public IActionResult Create(Todo todo)
     {
+      if (!ModelState.IsValid) //indicates if it was possible to bind
+       //the incoming values from the request to the
+       //model correctly  and whether any explicitly specified
+       //validation rules were broken during the model binding process.
+      {
+        return View();
+      }
       var newTodo = new Todo
       {
         Description = todo.Description
