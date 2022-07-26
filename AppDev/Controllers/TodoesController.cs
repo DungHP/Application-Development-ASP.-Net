@@ -1,4 +1,5 @@
 ﻿using AppDev.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections;
@@ -10,8 +11,7 @@ using WebApplication2.Models;
 
 namespace WebApplication2.Controllers
 {
- 
-
+  [Authorize]
   public class TodoesController : Controller
   {
     private ApplicationDbContext _context;

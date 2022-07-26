@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -22,6 +23,7 @@ namespace WebApplication2.Models
     [ForeignKey("Category")]
     public int CategoryId { get; set; } 
     public Category Category { get; set; }
+    public IdentityUser User { get; set; }  
   }
   public class Category
   {
