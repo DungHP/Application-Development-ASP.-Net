@@ -17,6 +17,7 @@ namespace WebApplication2.Models
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     public TodoStatus Status { get; set; } = TodoStatus.Todo;
+
     [Required]
     [ForeignKey("Category")]
     public int CategoryId { get; set; } 
@@ -28,7 +29,7 @@ namespace WebApplication2.Models
     public int Id { get; set; }
     [Required(ErrorMessage = "Description can't be empty!")]
     [StringLength(255)]
-    public int Description { get; set; }
+    public string Description { get; set; }
     public List<Todo> Todoes { get; set; }
   }
 }

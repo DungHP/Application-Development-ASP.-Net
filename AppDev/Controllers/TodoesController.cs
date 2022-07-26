@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AppDev.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Policy;
 using WebApplication2.Data;
@@ -19,28 +22,39 @@ namespace WebApplication2.Controllers
     [HttpGet]
     public IActionResult Index()
     {
-      IEnumerable todoes = _context.Todoes.ToList();
+      IEnumerable<Todo> todoes = _context.Todoes
+      .Include(t => t.Category)
+      .ToList();
       return View(todoes);
     }
 
     [HttpGet]
     public IActionResult Create()
     {
-      return View();
+      var viewModel = new TodoCategoriesViewModel()
+      {
+        Categories = _context.Categories.ToList()
+      };
+      return View(viewModel);
     }
     [HttpPost]
-    public IActionResult Create(Todo todo)
+    public IActionResult Create(TodoCategoriesViewModel viewModel)
     {
       if (!ModelState.IsValid) //indicates if it was possible to bind
        //the incoming values from the request to the
        //model correctly  and whether any explicitly specified
        //validation rules were broken during the model binding process.
       {
-        return View();
+        viewModel = new TodoCategoriesViewModel
+        {
+          Categories = _context.Categories.ToList()
+        };
+        return View(viewModel);
       }
       var newTodo = new Todo
       {
-        Description = todo.Description
+        Description = viewModel.Todo.Description,
+        CategoryId = viewModel.Todo.CategoryId
       };
 
       _context.Add(newTodo);
@@ -65,33 +79,52 @@ namespace WebApplication2.Controllers
     public IActionResult Edit(int id)
     {
       var todoInDb = _context.Todoes.SingleOrDefault(t => t.Id == id);
+      
       if (todoInDb is null)
       {
         return NotFound();
       }
 
-      return View(todoInDb);
-    }
+      var viewModel = new TodoCategoriesViewModel
+      {
+        Todo = todoInDb,
+        Categories = _context.Categories.ToList()
+      };
+      return View(viewModel);
+    
+  }
 
     [HttpPost]
-    public IActionResult Edit(Todo task)
+    public IActionResult Edit(TodoCategoriesViewModel viewModel)
     {
-      var todoInDb = _context.Todoes.SingleOrDefault(t => t.Id == task.Id);
-      if(todoInDb is null)
+      var todoInDb = _context.Todoes.SingleOrDefault(t => t.Id == viewModel.Todo.Id);
+
+      if (todoInDb is null)
       {
         return BadRequest();
       }
+      if (!ModelState.IsValid)
+      {
+        viewModel = new TodoCategoriesViewModel
+        {
+          Todo = viewModel.Todo,
+          Categories = _context.Categories.ToList()
+        };
+        return View(viewModel);
+      }
 
-      todoInDb.Description = task.Description;
-      todoInDb.Status = task.Status;
-
+      todoInDb.Description = viewModel.Todo.Description;
+      todoInDb.Status = viewModel.Todo.Status;
+      todoInDb.CategoryId = viewModel.Todo.CategoryId;
       _context.SaveChanges();
       return RedirectToAction("Index");
     }
     [HttpGet]
-    public IActionResult Detail(int id)
+    public IActionResult Details(int id)
     {
-      var todoInDb = _context.Todoes.SingleOrDefault(t => t.Id == id);
+      var todoInDb = _context.Todoes
+        .Include(t => t.Category)
+        .SingleOrDefault(t => t.Id == id);
       if (todoInDb is null)
       {
         return NotFound();
