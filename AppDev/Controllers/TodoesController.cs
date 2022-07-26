@@ -20,11 +20,21 @@ namespace WebApplication2.Controllers
       _context = context;
     }
     [HttpGet]
-    public IActionResult Index()
+    public IActionResult Index(string category)
     {
+      if (!string.IsNullOrWhiteSpace(category))
+      {
+        var result = _context.Todoes
+          .Include(t => t.Category)
+          .Where(t => t.Category.Description.Equals(category))
+          .ToList();
+
+        return View(result);
+      }
+
       IEnumerable<Todo> todoes = _context.Todoes
-      .Include(t => t.Category)
-      .ToList();
+        .Include(t => t.Category)
+        .ToList();
       return View(todoes);
     }
 
@@ -120,7 +130,7 @@ namespace WebApplication2.Controllers
       return RedirectToAction("Index");
     }
     [HttpGet]
-    public IActionResult Details(int id)
+    public IActionResult Detail(int id)
     {
       var todoInDb = _context.Todoes
         .Include(t => t.Category)
