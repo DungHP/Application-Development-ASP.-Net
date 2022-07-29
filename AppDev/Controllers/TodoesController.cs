@@ -1,4 +1,5 @@
 ﻿using AppDev.Models;
+using AppDev.Utils;
 using AppDev.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -13,7 +14,7 @@ using WebApplication2.Models;
 
 namespace WebApplication2.Controllers
 {
-  [Authorize]
+  [Authorize(Roles = Role.USER)]
   public class TodoesController : Controller
   {
     private ApplicationDbContext _context;

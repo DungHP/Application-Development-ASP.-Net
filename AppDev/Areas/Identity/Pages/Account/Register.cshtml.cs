@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 
+
 namespace AppDev.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
@@ -26,17 +27,21 @@ namespace AppDev.Areas.Identity.Pages.Account
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            RoleManager<IdentityRole> roleManager
+            )
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _roleManager = roleManager;
           }
         public SelectList RoleSelectList { get; set; }
 
@@ -127,8 +132,16 @@ namespace AppDev.Areas.Identity.Pages.Account
                 }
             }
 
-            // If we got this far, something failed, redisplay form
-            return Page();
+
+      RoleSelectList = new SelectList(new List<string>
+              {
+                Role.ADMIN,
+                Role.USER
+              }
+          );
+        
+      // If we got this far, something failed, redisplay form
+      return Page();
         }
     }
 }
