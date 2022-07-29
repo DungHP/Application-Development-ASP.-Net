@@ -1,4 +1,5 @@
-﻿using AppDev.ViewModels;
+﻿using AppDev.Models;
+using AppDev.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,13 +17,12 @@ namespace WebApplication2.Controllers
   public class TodoesController : Controller
   {
     private ApplicationDbContext _context;
-    private readonly UserManager<IdentityUser> _userManager;
-    public TodoesController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+    private readonly UserManager<ApplicationUser> _userManager;
+    public TodoesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
     {
       _context = context;
       _userManager = userManager;
     }
-    [HttpGet]
     [HttpGet]
     public IActionResult Index(string category)
     {
@@ -69,10 +69,12 @@ namespace WebApplication2.Controllers
         };
         return View(viewModel);
       }
+      var currentUserId = _userManager.GetUserId(User);
       var newTodo = new Todo
       {
         Description = viewModel.Todo.Description,
-        CategoryId = viewModel.Todo.CategoryId
+        CategoryId = viewModel.Todo.CategoryId,
+         UserId = currentUserId
       };
 
       _context.Add(newTodo);
