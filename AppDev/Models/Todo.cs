@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AppDev.Models;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -24,8 +25,12 @@ namespace WebApplication2.Models
     public int CategoryId { get; set; } 
     public Category Category { get; set; }
     public string UserId { get; set; }
-    public IdentityUser User { get; set; }  
+    public ApplicationUser User { get; set; }  
   }
+
+
+
+  //Category
   public class Category
   {
     [Key]
