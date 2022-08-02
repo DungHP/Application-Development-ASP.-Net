@@ -14,7 +14,7 @@ using WebApplication2.Models;
 
 namespace WebApplication2.Controllers
 {
-  [Authorize(Roles = Role.USER)]
+   [Authorize(Roles = Role.USER)]
   public class TodoesController : Controller
   {
     private ApplicationDbContext _context;
@@ -33,7 +33,7 @@ namespace WebApplication2.Controllers
         var result = _context.Todoes
           .Include(t => t.Category)
           .Where(t => t.Category.Description.Equals(category)
-             && t.UserId == currentUserId
+              && t.UserId == currentUserId
           )
           .ToList();
 
@@ -59,10 +59,7 @@ namespace WebApplication2.Controllers
     [HttpPost]
     public IActionResult Create(TodoCategoriesViewModel viewModel)
     {
-      if (!ModelState.IsValid) //indicates if it was possible to bind
-       //the incoming values from the request to the
-       //model correctly  and whether any explicitly specified
-       //validation rules were broken during the model binding process.
+      if (!ModelState.IsValid)
       {
         viewModel = new TodoCategoriesViewModel
         {
@@ -70,25 +67,25 @@ namespace WebApplication2.Controllers
         };
         return View(viewModel);
       }
+
       var currentUserId = _userManager.GetUserId(User);
       var newTodo = new Todo
       {
         Description = viewModel.Todo.Description,
         CategoryId = viewModel.Todo.CategoryId,
-         UserId = currentUserId
+        UserId = currentUserId
       };
 
       _context.Add(newTodo);
       _context.SaveChanges();
       return RedirectToAction("Index");
-      
     }
     [HttpGet]
     public IActionResult Delete(int id)
     {
       var currentUserId = _userManager.GetUserId(User);
-      var todoInDb = _context.Todoes.SingleOrDefault(t => t.Id == id 
-      && t.UserId == currentUserId);
+      var todoInDb = _context.Todoes.SingleOrDefault(
+        t => t.Id == id && t.UserId == currentUserId);
       if (todoInDb is null)
       {
         return NotFound();
@@ -98,38 +95,36 @@ namespace WebApplication2.Controllers
       _context.SaveChanges();
       return RedirectToAction("Index");
     }
+
     [HttpGet]
     public IActionResult Edit(int id)
     {
       var currentUserId = _userManager.GetUserId(User);
-      var todoInDb = _context.Todoes.SingleOrDefault(t => t.Id == id 
-      && t.UserId == currentUserId);
-      
+      var todoInDb = _context.Todoes.SingleOrDefault(
+        t => t.Id == id && t.UserId == currentUserId);
       if (todoInDb is null)
       {
         return NotFound();
       }
-
       var viewModel = new TodoCategoriesViewModel
       {
         Todo = todoInDb,
         Categories = _context.Categories.ToList()
       };
       return View(viewModel);
-    
-  }
+    }
 
     [HttpPost]
     public IActionResult Edit(TodoCategoriesViewModel viewModel)
     {
       var currentUserId = _userManager.GetUserId(User);
-      var todoInDb = _context.Todoes.SingleOrDefault(t => t.Id == viewModel.Todo.Id
-      && t.UserId == currentUserId);
-
+      var todoInDb = _context.Todoes.SingleOrDefault(
+        t => t.Id == viewModel.Todo.Id && t.UserId == currentUserId);
       if (todoInDb is null)
       {
         return BadRequest();
       }
+
       if (!ModelState.IsValid)
       {
         viewModel = new TodoCategoriesViewModel
@@ -143,11 +138,14 @@ namespace WebApplication2.Controllers
       todoInDb.Description = viewModel.Todo.Description;
       todoInDb.Status = viewModel.Todo.Status;
       todoInDb.CategoryId = viewModel.Todo.CategoryId;
+
       _context.SaveChanges();
+
       return RedirectToAction("Index");
     }
+
     [HttpGet]
-    public IActionResult Detail(int id)
+    public IActionResult Details(int id)
     {
       var currentUserId = _userManager.GetUserId(User);
       var todoInDb = _context.Todoes

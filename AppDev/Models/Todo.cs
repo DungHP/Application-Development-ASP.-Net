@@ -14,7 +14,7 @@ namespace WebApplication2.Models
     public int Id { get; set; }
     [Required(ErrorMessage = "You haven't input anything in the description!")]
     [StringLength(255)]
-    public string Description   { get; set; }
+    public string Description { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
@@ -22,22 +22,9 @@ namespace WebApplication2.Models
 
     [Required]
     [ForeignKey("Category")]
-    public int CategoryId { get; set; } 
+    public int CategoryId { get; set; }
     public Category Category { get; set; }
     public string UserId { get; set; }
-    public ApplicationUser User { get; set; }  
-  }
-
-
-
-  //Category
-  public class Category
-  {
-    [Key]
-    public int Id { get; set; }
-    [Required(ErrorMessage = "Description can't be empty!")]
-    [StringLength(255)]
-    public string Description { get; set; }
-    public List<Todo> Todoes { get; set; }
+    public ApplicationUser User { get; set; }
   }
 }

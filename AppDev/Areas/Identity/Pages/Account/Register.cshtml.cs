@@ -25,32 +25,32 @@ namespace AppDev.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
-        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public RegisterModel(
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
-            ILogger<RegisterModel> logger,
-            IEmailSender emailSender,
-            RoleManager<IdentityRole> roleManager
-            )
-        {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _logger = logger;
-            _emailSender = emailSender;
-            _roleManager = roleManager;
-          }
-        public SelectList RoleSelectList { get; set; }
 
-        [BindProperty]
-        public InputModel Input { get; set; }
+    public RegisterModel(
+         UserManager<ApplicationUser> userManager,
+         SignInManager<ApplicationUser> signInManager,
+         RoleManager<IdentityRole> roleManager,
+         ILogger<RegisterModel> logger,
+         IEmailSender emailSender)
+    {
+      _userManager = userManager;
+      _signInManager = signInManager;
+      _roleManager = roleManager;
+      _logger = logger;
+      _emailSender = emailSender;
+    }
+    public SelectList RoleSelectList { get; set; }
+    [BindProperty]
+    public InputModel Input { get; set; }
 
-        public string ReturnUrl { get; set; }
+    public string ReturnUrl { get; set; }
 
-        public IList<AuthenticationScheme> ExternalLogins { get; set; }
+    public IList<AuthenticationScheme> ExternalLogins { get; set; }
+
 
         public class InputModel
         {
@@ -104,8 +104,8 @@ namespace AppDev.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+          IdentityResult roleresult = await _userManager.AddToRoleAsync(user, Input.Role);
+          var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.Page(
                         "/Account/ConfirmEmail",

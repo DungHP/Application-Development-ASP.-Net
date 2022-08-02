@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using AppDev.Models;
+using System.Collections.Generic;
 using WebApplication2.Models;
 
 namespace AppDev.ViewModels
