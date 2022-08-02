@@ -7,8 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Policy;
+using System.Threading.Tasks;
 using WebApplication2.Data;
 using WebApplication2.Models;
 
@@ -57,8 +59,9 @@ namespace WebApplication2.Controllers
       return View(viewModel);
     }
     [HttpPost]
-    public IActionResult Create(TodoCategoriesViewModel viewModel)
+    public async Task<IActionResult> Create(TodoCategoriesViewModel viewModel)
     {
+      var currentUserId = _userManager.GetUserId(User);
       if (!ModelState.IsValid)
       {
         viewModel = new TodoCategoriesViewModel
@@ -67,17 +70,22 @@ namespace WebApplication2.Controllers
         };
         return View(viewModel);
       }
-
-      var currentUserId = _userManager.GetUserId(User);
-      var newTodo = new Todo
+      using (var memoryStream = new MemoryStream())
       {
-        Description = viewModel.Todo.Description,
-        CategoryId = viewModel.Todo.CategoryId,
-        UserId = currentUserId
-      };
+        await viewModel.FormFile.CopyToAsync(memoryStream);
+        var newTodo = new Todo
+        {
+          Description = viewModel.Todo.Description,
+          CategoryId = viewModel.Todo.CategoryId,
+          UserId = currentUserId,
+          ImageData = memoryStream.ToArray()
+        };
+        _context.Add(newTodo);
+        await _context.SaveChangesAsync();
 
-      _context.Add(newTodo);
-      _context.SaveChanges();
+      }
+     
+   
       return RedirectToAction("Index");
     }
     [HttpGet]
@@ -176,5 +184,7 @@ namespace WebApplication2.Controllers
         .ToList();
       return View("Index", todoesByCategoryName);
     }
+
+   
   }
 }
