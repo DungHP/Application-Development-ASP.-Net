@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -163,6 +164,11 @@ namespace WebApplication2.Controllers
       {
         return NotFound();
       }
+      string imageBase64Data = Convert.ToBase64String(todoInDb.ImageData);
+
+      string image = string.Format("data:image/jpg;base64, {0}", imageBase64Data);
+      ViewBag.ImageData = image;
+
 
       return View(todoInDb);
     }
