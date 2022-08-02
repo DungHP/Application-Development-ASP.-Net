@@ -158,5 +158,23 @@ namespace WebApplication2.Controllers
 
       return View(todoInDb);
     }
+
+    [HttpGet]
+    public IActionResult ByCategory(int id)
+    {
+      var categoryInDb = _context.Categories
+        .Include(t => t.Todoes)
+        .SingleOrDefault(t => t.Id == id);
+
+      if (categoryInDb == null)
+      {
+        return NotFound();
+      }
+      var currentUserId = _userManager.GetUserId(User);
+      var todoesByCategoryName = categoryInDb.Todoes
+        .Where(t => t.UserId == currentUserId)
+        .ToList();
+      return View("Index", todoesByCategoryName);
+    }
   }
 }
