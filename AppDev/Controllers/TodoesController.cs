@@ -24,13 +24,15 @@ namespace WebApplication2.Controllers
     private ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
     private ITodoRepository _todoRepos;
-    public TodoesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, ITodoRepository todoRepos)
+    private ICategoryRepository _categoryRepos;
+    public TodoesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, ITodoRepository todoRepos, ICategoryRepository categoryRepos)
     {
-       _context = context;
-       _userManager = userManager;
+      _context = context;
+      _userManager = userManager;
       _todoRepos = todoRepos;
+      _categoryRepos = categoryRepos;
     }
- 
+
     [HttpGet]
     public IActionResult Index(string category)
     {
@@ -61,7 +63,7 @@ namespace WebApplication2.Controllers
     {
       var viewModel = new TodoCategoriesViewModel()
       {
-        Categories = _context.Categories.ToList()
+        Categories = _categoryRepos.GetAll()
       };
       return View(viewModel);
     }
@@ -172,9 +174,7 @@ namespace WebApplication2.Controllers
     [HttpGet]
     public IActionResult ByCategory(int id)
     {
-      var categoryInDb = _context.Categories
-        .Include(t => t.Todoes)
-        .SingleOrDefault(t => t.Id == id);
+      var categoryInDb = _categoryRepos.GetById(id);
 
       if (categoryInDb == null)
       {
