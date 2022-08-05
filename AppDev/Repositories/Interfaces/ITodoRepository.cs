@@ -12,8 +12,10 @@ namespace AppDev.Repositories.Interfaces
     bool CreateTodo(TodoCategoriesViewModel viewModel);
     bool DeleteById(int id); 
     Todo GetById(int id);
+    Todo GetByTodoIdAndUserId(int id, string userId);
+    bool DeleteByIdAndUserId(int id, string userId);
     bool EditTodo(TodoCategoriesViewModel viewModel);
-    IEnumerable<Todo> GetTooesByCategoryId(int id);
+    IEnumerable<Todo> GetTodesByCategoryId(int id);
 
   }
 }

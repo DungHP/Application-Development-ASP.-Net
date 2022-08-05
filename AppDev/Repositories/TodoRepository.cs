@@ -40,12 +40,31 @@ namespace AppDev.Repositories
 
     public Todo GetById(int id)
     {
-      throw new System.NotImplementedException();
+      return _context.Todoes
+        .Include(t => t.Category)
+        .SingleOrDefault(t => t.Id == id);
     }
 
-    public IEnumerable<Todo> GetTooesByCategoryId(int id)
+    public IEnumerable<Todo> GetTodesByCategoryId(int id)
     {
       throw new System.NotImplementedException();
     }
+
+    public Todo GetByTodoIdAndUserId(int id, string userId)
+    {
+      return _context.Todoes
+        .Include(t => t.Category)
+        .SingleOrDefault(t => t.Id == id && t.UserId == userId);
+    }
+
+    public bool DeleteByIdAndUserId(int id, string userId)
+    {
+      var todoInDb = GetByTodoIdAndUserId(id, userId);
+      if (todoInDb == null) return false;
+      
+      _context.Todoes.Remove(todoInDb);
+      return true;
+    }
+
   }
 }
