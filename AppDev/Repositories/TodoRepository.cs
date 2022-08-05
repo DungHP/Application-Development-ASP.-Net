@@ -61,8 +61,9 @@ namespace AppDev.Repositories
     {
       var todoInDb = GetByTodoIdAndUserId(id, userId);
       if (todoInDb == null) return false;
-      
+
       _context.Todoes.Remove(todoInDb);
+      _context.SaveChanges();
       return true;
     }
 
