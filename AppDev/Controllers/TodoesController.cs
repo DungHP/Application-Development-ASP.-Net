@@ -154,7 +154,7 @@ namespace WebApplication2.Controllers
     }
 
     [HttpGet]
-    public IActionResult Details(int id)
+    public IActionResult Detail(int id)
     {
       var currentUserId = _userManager.GetUserId(User);
       var todoInDb = _context.Todoes
@@ -165,10 +165,8 @@ namespace WebApplication2.Controllers
         return NotFound();
       }
       string imageBase64Data = Convert.ToBase64String(todoInDb.ImageData);
-
       string image = string.Format("data:image/jpg;base64, {0}", imageBase64Data);
       ViewBag.ImageData = image;
-
 
       return View(todoInDb);
     }
