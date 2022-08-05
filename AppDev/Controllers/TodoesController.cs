@@ -11,6 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Policy;
 using System.Threading.Tasks;
 using WebApplication2.Data;
@@ -18,7 +19,7 @@ using WebApplication2.Models;
 
 namespace WebApplication2.Controllers
 {
-   [Authorize(Roles = Role.USER)]
+  [Authorize(Roles = Role.USER)]
   public class TodoesController : Controller
   {
     private ApplicationDbContext _context;
@@ -45,9 +46,9 @@ namespace WebApplication2.Controllers
                 && t.UserId == currentUserId
             )
             .ToList();*/
-        var result = _todoRepos.GetAll().Where(t => t.Category.Description.Equals(category) && t.UserId == currentUserId);
+        var result = _todoRepos.GetAll();
 
-        
+
         return View(result);
       }
 
@@ -80,7 +81,7 @@ namespace WebApplication2.Controllers
       }
       var currentUserId = _userManager.GetUserId(User);
 
-      bool isCreated = await _todoRepos.CreateTodoWithUserId(viewModel, currentUserId);
+      bool isCreated = await _todoRepos.CreateTodo(viewModel, currentUserId);
 
       if (!isCreated) return BadRequest();
       return RedirectToAction("Index");
@@ -89,7 +90,7 @@ namespace WebApplication2.Controllers
     public IActionResult Delete(int id)
     {
       var currentUserId = _userManager.GetUserId(User);
-      var isDeleted = _todoRepos.DeleteByIdAndUserId(id, currentUserId);
+      var isDeleted = _todoRepos.DeleteTodo(id, currentUserId);
 
       if (!isDeleted) return NotFound();
       return RedirectToAction("Index");
@@ -99,7 +100,7 @@ namespace WebApplication2.Controllers
     public IActionResult Edit(int id)
     {
       var currentUserId = _userManager.GetUserId(User);
-      var todoInDb = _todoRepos.GetByTodoIdAndUserId(id, currentUserId);
+      var todoInDb = _todoRepos.GetTodo(id, currentUserId);
       if (todoInDb is null)
       {
         return NotFound();
@@ -115,7 +116,7 @@ namespace WebApplication2.Controllers
     [HttpPost]
     public IActionResult Edit(TodoCategoriesViewModel viewModel)
     {
-   
+
       if (!ModelState.IsValid)
       {
         viewModel = new TodoCategoriesViewModel
@@ -139,7 +140,7 @@ namespace WebApplication2.Controllers
     public IActionResult Detail(int id)
     {
       var currentUserId = _userManager.GetUserId(User);
-      var todoInDb = _todoRepos.GetByTodoIdAndUserId(id, currentUserId);
+      var todoInDb = _todoRepos.GetTodo(id, currentUserId);
       if (todoInDb is null)
       {
         return NotFound();
@@ -161,12 +162,15 @@ namespace WebApplication2.Controllers
         return NotFound();
       }
       var currentUserId = _userManager.GetUserId(User);
-      var todoesByCategoryName = categoryInDb.Todoes
-        .Where(t => t.UserId == currentUserId)
-        .ToList();
+      var todoesByCategoryName = GetTodoesFromCategoryAndUserId(categoryInDb, currentUserId);
       return View("Index", todoesByCategoryName);
     }
-
-   
+    [NonAction]
+    private List<Todo> GetTodoesFromCategoryAndUserId(Category category, string userId)
+    {
+      return category.Todoes
+        .Where(t => t.UserId == userId)
+        .ToList();
+    }
   }
 }

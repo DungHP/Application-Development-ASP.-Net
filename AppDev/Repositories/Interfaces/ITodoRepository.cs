@@ -10,15 +10,15 @@ namespace AppDev.Repositories.Interfaces
   public interface ITodoRepository
   {
     IEnumerable<Todo> GetAll();
-    Task<bool> CreateTodoWithUserId(TodoCategoriesViewModel viewModel, string userId);
-    bool CreateTodo(TodoCategoriesViewModel viewModel);
-    bool DeleteById(int id); 
-    Todo GetById(int id);
-    Todo GetByTodoIdAndUserId(int id, string userId);
-    bool DeleteByIdAndUserId(int id, string userId);
-    bool EditTodo(TodoCategoriesViewModel viewModel, string userId);
-    IEnumerable<Todo> GetTodesByCategoryId(int id);
+    IEnumerable<Todo> GetAll(string userId);
+    IEnumerable<Todo> GetAll(string userId, string categoryName);
+    IEnumerable<Todo> GetAllByCategoryId(int id);
 
+    Task<bool> CreateTodo(TodoCategoriesViewModel viewModel, string userId);
+    bool DeleteTodo(int id, string userId);
+    Todo GetTodo(int id);
+    Todo GetTodo(int id, string userId);
+    bool EditTodo(TodoCategoriesViewModel viewModel, string userId);
 
 
   }

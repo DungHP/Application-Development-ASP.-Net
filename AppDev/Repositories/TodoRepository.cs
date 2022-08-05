@@ -18,65 +18,7 @@ namespace AppDev.Repositories
       _context = context;
     }
 
-    public IEnumerable<Todo> GetAll()
-    {
-      return _context.Todoes
-        .Include(t => t.Category)
-        .ToList();
-    }
-    public bool CreateTodo(TodoCategoriesViewModel viewModel)
-    {
-      throw new System.NotImplementedException();
-    }
-
-    public bool DeleteById(int id)
-    {
-      throw new System.NotImplementedException();
-    }
-
-    public bool EditTodo(TodoCategoriesViewModel viewModel, string userId)
-    {
-      var todoInDb = GetByTodoIdAndUserId(viewModel.Todo.Id, userId);
-      if (todoInDb == null) return false;
-
-      todoInDb.Description = viewModel.Todo.Description;
-      todoInDb.Status = viewModel.Todo.Status;
-      todoInDb.CategoryId = viewModel.Todo.CategoryId;
-
-      return _context.SaveChanges() > 0;
-    }
-
-
-    public Todo GetById(int id)
-    {
-      return _context.Todoes
-        .Include(t => t.Category)
-        .SingleOrDefault(t => t.Id == id);
-    }
-
-    public IEnumerable<Todo> GetTodesByCategoryId(int id)
-    {
-      throw new System.NotImplementedException();
-    }
-
-    public Todo GetByTodoIdAndUserId(int id, string userId)
-    {
-      return _context.Todoes
-        .Include(t => t.Category)
-        .SingleOrDefault(t => t.Id == id && t.UserId == userId);
-    }
-
-    public bool DeleteByIdAndUserId(int id, string userId)
-    {
-      var todoInDb = GetByTodoIdAndUserId(id, userId);
-      if (todoInDb == null) return false;
-
-      _context.Todoes.Remove(todoInDb);
-      _context.SaveChanges();
-      return true;
-    }
-
-    public async Task<bool> CreateTodoWithUserId(TodoCategoriesViewModel viewModel, string userId)
+    public async Task<bool> CreateTodo(TodoCategoriesViewModel viewModel, string userId)
     {
       int result;
       using (var memoryStream = new MemoryStream())
@@ -93,9 +35,69 @@ namespace AppDev.Repositories
         result = await _context.SaveChangesAsync();
       }
       return result > 0;
+
     }
 
-    public bool EditTodo(TodoCategoriesViewModel viewModel)
+    public bool DeleteTodo(int id, string userId)
+    {
+      var todoInDb = GetTodo(id, userId);
+      if (todoInDb == null) return false;
+
+      _context.Todoes.Remove(todoInDb);
+      _context.SaveChanges();
+      return true;
+    }
+
+    public bool EditTodo(TodoCategoriesViewModel viewModel, string userId)
+    {
+      var todoInDb = GetTodo(viewModel.Todo.Id, userId);
+      if (todoInDb == null) return false;
+
+      todoInDb.Description = viewModel.Todo.Description;
+      todoInDb.Status = viewModel.Todo.Status;
+      todoInDb.CategoryId = viewModel.Todo.CategoryId;
+
+      return _context.SaveChanges() > 0;
+    }
+
+    public IEnumerable<Todo> GetAll()
+    {
+      return _context.Todoes
+        .Include(t => t.Category)
+        .ToList();
+    }
+
+    public IEnumerable<Todo> GetAll(string userId)
+    {
+      return _context.Todoes
+        .Include(t => t.Category)
+        .Where(t => t.UserId == userId)
+        .ToList();
+    }
+
+    public IEnumerable<Todo> GetAll(string userId, string categoryName)
+    {
+      return _context.Todoes
+        .Include(t => t.Category)
+        .Where(t => t.UserId == userId && t.Category.Description == categoryName)
+        .ToList();
+    }
+
+    public Todo GetTodo(int id)
+    {
+      return _context.Todoes
+        .Include(t => t.Category)
+        .SingleOrDefault(t => t.Id == id);
+    }
+
+    public Todo GetTodo(int id, string userId)
+    {
+      return _context.Todoes
+        .Include(t => t.Category)
+        .SingleOrDefault(t => t.Id == id && t.UserId == userId);
+    }
+
+    public IEnumerable<Todo> GetAllByCategoryId(int id)
     {
       throw new System.NotImplementedException();
     }
