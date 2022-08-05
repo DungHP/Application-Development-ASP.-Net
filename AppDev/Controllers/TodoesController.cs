@@ -1,4 +1,5 @@
 ﻿using AppDev.Models;
+using AppDev.Repositories.Interfaces;
 using AppDev.Utils;
 using AppDev.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -22,24 +23,29 @@ namespace WebApplication2.Controllers
   {
     private ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
-    public TodoesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+    private ITodoRepository _todoRepos;
+    public TodoesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, ITodoRepository todoRepos)
     {
-      _context = context;
-      _userManager = userManager;
+       _context = context;
+       _userManager = userManager;
+      _todoRepos = todoRepos;
     }
+ 
     [HttpGet]
     public IActionResult Index(string category)
     {
       var currentUserId = _userManager.GetUserId(User);
       if (!string.IsNullOrWhiteSpace(category))
       {
-        var result = _context.Todoes
-          .Include(t => t.Category)
-          .Where(t => t.Category.Description.Equals(category)
-              && t.UserId == currentUserId
-          )
-          .ToList();
+        /*  var result = _context.Todoes
+            .Include(t => t.Category)
+            .Where(t => t.Category.Description.Equals(category)
+                && t.UserId == currentUserId
+            )
+            .ToList();*/
+        var result = _todoRepos.GetAll().Where(t => t.Category.Description.Equals(category) && t.UserId == currentUserId);
 
+        
         return View(result);
       }
 
