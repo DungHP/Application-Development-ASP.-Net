@@ -2,7 +2,9 @@
 using AppDev.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using WebApplication2.Data;
 using WebApplication2.Models;
 
@@ -32,9 +34,16 @@ namespace AppDev.Repositories
       throw new System.NotImplementedException();
     }
 
-    public bool EditTodo(TodoCategoriesViewModel viewModel)
+    public bool EditTodo(TodoCategoriesViewModel viewModel, string userId)
     {
-      throw new System.NotImplementedException();
+      var todoInDb = GetByTodoIdAndUserId(viewModel.Todo.Id, userId);
+      if (todoInDb == null) return false;
+
+      todoInDb.Description = viewModel.Todo.Description;
+      todoInDb.Status = viewModel.Todo.Status;
+      todoInDb.CategoryId = viewModel.Todo.CategoryId;
+
+      return _context.SaveChanges() > 0;
     }
 
 
@@ -67,5 +76,28 @@ namespace AppDev.Repositories
       return true;
     }
 
+    public async Task<bool> CreateTodoWithUserId(TodoCategoriesViewModel viewModel, string userId)
+    {
+      int result;
+      using (var memoryStream = new MemoryStream())
+      {
+        await viewModel.FormFile.CopyToAsync(memoryStream);
+        var newTodo = new Todo
+        {
+          Description = viewModel.Todo.Description,
+          CategoryId = viewModel.Todo.CategoryId,
+          UserId = userId,
+          ImageData = memoryStream.ToArray()
+        };
+        _context.Add(newTodo);
+        result = await _context.SaveChangesAsync();
+      }
+      return result > 0;
+    }
+
+    public bool EditTodo(TodoCategoriesViewModel viewModel)
+    {
+      throw new System.NotImplementedException();
+    }
   }
 }

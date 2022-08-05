@@ -70,31 +70,19 @@ namespace WebApplication2.Controllers
     [HttpPost]
     public async Task<IActionResult> Create(TodoCategoriesViewModel viewModel)
     {
-      var currentUserId = _userManager.GetUserId(User);
       if (!ModelState.IsValid)
       {
         viewModel = new TodoCategoriesViewModel
         {
-          Categories = _context.Categories.ToList()
+          Categories = _categoryRepos.GetAll()
         };
         return View(viewModel);
       }
-      using (var memoryStream = new MemoryStream())
-      {
-        await viewModel.FormFile.CopyToAsync(memoryStream);
-        var newTodo = new Todo
-        {
-          Description = viewModel.Todo.Description,
-          CategoryId = viewModel.Todo.CategoryId,
-          UserId = currentUserId,
-          ImageData = memoryStream.ToArray()
-        };
-        _context.Add(newTodo);
-        await _context.SaveChangesAsync();
+      var currentUserId = _userManager.GetUserId(User);
 
-      }
-     
-   
+      bool isCreated = await _todoRepos.CreateTodoWithUserId(viewModel, currentUserId);
+
+      if (!isCreated) return BadRequest();
       return RedirectToAction("Index");
     }
     [HttpGet]
@@ -111,8 +99,7 @@ namespace WebApplication2.Controllers
     public IActionResult Edit(int id)
     {
       var currentUserId = _userManager.GetUserId(User);
-      var todoInDb = _context.Todoes.SingleOrDefault(
-        t => t.Id == id && t.UserId == currentUserId);
+      var todoInDb = _todoRepos.GetByTodoIdAndUserId(id, currentUserId);
       if (todoInDb is null)
       {
         return NotFound();
@@ -120,7 +107,7 @@ namespace WebApplication2.Controllers
       var viewModel = new TodoCategoriesViewModel
       {
         Todo = todoInDb,
-        Categories = _context.Categories.ToList()
+        Categories = _categoryRepos.GetAll()
       };
       return View(viewModel);
     }
@@ -128,30 +115,23 @@ namespace WebApplication2.Controllers
     [HttpPost]
     public IActionResult Edit(TodoCategoriesViewModel viewModel)
     {
-      var currentUserId = _userManager.GetUserId(User);
-      var todoInDb = _context.Todoes.SingleOrDefault(
-        t => t.Id == viewModel.Todo.Id && t.UserId == currentUserId);
-      if (todoInDb is null)
-      {
-        return BadRequest();
-      }
-
+   
       if (!ModelState.IsValid)
       {
         viewModel = new TodoCategoriesViewModel
         {
           Todo = viewModel.Todo,
-          Categories = _context.Categories.ToList()
+          Categories = _categoryRepos.GetAll()
         };
         return View(viewModel);
       }
 
-      todoInDb.Description = viewModel.Todo.Description;
-      todoInDb.Status = viewModel.Todo.Status;
-      todoInDb.CategoryId = viewModel.Todo.CategoryId;
+      var currentUserId = _userManager.GetUserId(User);
+      var isEdited = _todoRepos.EditTodo(viewModel, currentUserId);
 
       _context.SaveChanges();
 
+      if (!isEdited) return BadRequest();
       return RedirectToAction("Index");
     }
 
